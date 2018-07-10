@@ -3,6 +3,10 @@ package com.bridgelabz.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**purpose-To provide setter and getter methods to deal with user details
+ * @author yuga
+ *
+ */
 @Document(collection="User")
 public class User {
 
@@ -64,6 +68,12 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Override
+	public String toString() {
+		return "User [userName=" + userName + ", password=" + password + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", mobile=" + mobile + ", email=" + email + "]";
 	}
 
 }

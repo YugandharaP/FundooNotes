@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.model.User;
 import com.bridgelabz.repository.IUserRepository;
 
+/**
+ * purpose-To connect controller and MongoRepository
+ * 
+ * @author yuga
+ * @since 09-07-2018
+ */
 @Service
 public class UserServiceImplemntation implements IUserService {
 	@Autowired
@@ -18,6 +24,7 @@ public class UserServiceImplemntation implements IUserService {
 	 */
 	@Override
 	public Optional<User> verifyUserByuserName(User user) {
+		String details = user.toString();
 		return userRepository.findById(user.getUserName());
 	}
 

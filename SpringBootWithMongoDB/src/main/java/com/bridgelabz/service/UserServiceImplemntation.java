@@ -28,7 +28,7 @@ public class UserServiceImplemntation implements IUserService {
 		return userRepository.findById(user.getUserName());
 	}
 
-	/** To verify email is present in database or not */
+	/** To verify user is present in database or not */
 	@Override
 	public boolean verifyEmail(User user) {
 		if (userRepository.existsById(user.getUserName())) {

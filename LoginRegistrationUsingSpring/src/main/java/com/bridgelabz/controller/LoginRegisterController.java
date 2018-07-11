@@ -26,6 +26,14 @@ public class LoginRegisterController {
 	@Autowired
 	UserServiceImplementation userServiceImplementation;
 
+	/**
+	 * To take login url from view and perform operations
+	 * 
+	 * @param user
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<User> loginUser(@RequestBody User user) throws ClassNotFoundException, SQLException {
@@ -39,6 +47,14 @@ public class LoginRegisterController {
 
 	}
 
+	/**
+	 * purpose-To take register url from view and perform operations
+	 * 
+	 * @param user
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<User> registerUser(@RequestBody User user) throws ClassNotFoundException, SQLException {

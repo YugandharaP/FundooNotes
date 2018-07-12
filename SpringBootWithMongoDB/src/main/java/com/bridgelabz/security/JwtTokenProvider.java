@@ -4,8 +4,11 @@ import java.sql.Date;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.controller.LoginRegisterController;
 import com.bridgelabz.model.User;
 
 import io.jsonwebtoken.Claims;
@@ -19,18 +22,19 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtTokenProvider {
 	final static String KEY = "yuga";
+	private static final Logger logger = LoggerFactory.getLogger(LoginRegisterController.class);
 
 	/**To generate the token
 	 * @param user
 	 * @return
 	 */
 	public String generator(User user) {
-		String userName = user.getUserName();
+		String email = user.getEmail();
 		String passkey = user.getPassword();
 		long time = System.currentTimeMillis();
 		long nowMillis = System.currentTimeMillis() + (20 * 60 * 60 * 1000);
 		Date now = new Date(nowMillis);
-		JwtBuilder builder = Jwts.builder().setId(passkey).setIssuedAt(now).setSubject(userName)
+		JwtBuilder builder = Jwts.builder().setId(passkey).setIssuedAt(now).setSubject(email)
 				.signWith(SignatureAlgorithm.HS256, KEY);
 		if (time >= 0) {
 
@@ -45,7 +49,7 @@ public class JwtTokenProvider {
 
 		Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(KEY)).parseClaimsJws(jwt)
 				.getBody();
-		System.out.println("ID: " + claims.getId());
-		System.out.println("Subject: " + claims.getSubject());
+		logger.info("ID: " + claims.getId());
+		logger.info("Subject: " + claims.getSubject());
 	}
 }

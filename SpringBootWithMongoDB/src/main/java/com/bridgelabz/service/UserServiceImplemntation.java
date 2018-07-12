@@ -1,12 +1,26 @@
 package com.bridgelabz.service;
 
 import java.util.Optional;
+import java.util.Properties;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.controller.LoginRegisterController;
 import com.bridgelabz.model.User;
 import com.bridgelabz.repository.IUserRepository;
+import com.bridgelabz.security.JwtTokenProvider;
+import com.bridgelabz.util.Utility;
 
 /**
  * purpose-To connect controller and MongoRepository
@@ -18,20 +32,45 @@ import com.bridgelabz.repository.IUserRepository;
 public class UserServiceImplemntation implements IUserService {
 	@Autowired
 	IUserRepository userRepository;
+	@Autowired
+	private JwtTokenProvider token;
+	private static final Logger logger = LoggerFactory.getLogger(LoginRegisterController.class);
+	private final String adminMailId = "dharaparanjape.1007@gmail.com";
+	private final String adminPassword = "dhara1007";
 
 	/**
 	 * To verify userName is present in database or not
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<User> verifyUserByuserName(User user) {
-		String details = user.toString();
-		return userRepository.findById(user.getUserName());
+	public Optional<User> findByUserName(User user) {
+		@SuppressWarnings("rawtypes")
+		Optional optionalUser = userRepository.findByEmail(user.getEmail());
+		if (optionalUser != null) {
+			return optionalUser;
+		} else
+			return null;
 	}
 
-	/** To verify user is present in database or not */
+	/** To verify user which is present in database or not */
+	@Override
+	public boolean verifyUser(User user) {
+		if (userRepository.findByEmail(user.getEmail()) != null) {
+			saveUser(user);
+			return true;
+		}
+		return false;
+	}
+
+	/** To verify email which is present in database or not */
 	@Override
 	public boolean verifyEmail(User user) {
-		if (userRepository.existsById(user.getUserName())) {
+		String userEmail = user.getEmail();
+		if (userRepository.findByEmail(userEmail) != null) {
+			Optional<User> optionalUser = userRepository.findByEmail(userEmail);
+			user = optionalUser.get();
+			String userPassword = user.getPassword();
+			Utility.sendMail(userEmail, userPassword, adminMailId, adminPassword);
 			return true;
 		}
 		return false;
@@ -45,4 +84,16 @@ public class UserServiceImplemntation implements IUserService {
 		userRepository.insert(user);
 	}
 
+	public boolean sendAuthenticationMail(User user) {
+		// generate token
+		String validToken = token.generator(user);
+		logger.info("Your token is : " + validToken);
+		token.parseJWT(validToken);
+		// send mail with token
+		String userEmail = user.getEmail();
+		if (Utility.sendMailForActivation(userEmail, adminMailId, adminPassword, validToken)) {
+			return true;
+		} else
+			return false;
+	}
 }

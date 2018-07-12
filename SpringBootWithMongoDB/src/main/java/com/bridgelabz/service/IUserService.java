@@ -12,9 +12,19 @@ import com.bridgelabz.model.User;
  * @since 09/07/2018
  */
 public interface IUserService {
+	/** To verify email which is present in database or not */
 	public boolean verifyEmail(User user);
 
+	/**
+	 * To Save user information in database
+	 */
 	public void saveUser(User user);
 
-	Optional<User> verifyUserByuserName(User user);
+	/** To verify user which is present in database or not */
+	boolean verifyUser(User user);
+
+	/**
+	 * To verify userName is present in database or not
+	 */
+	Optional<User> findByUserName(User user);
 }

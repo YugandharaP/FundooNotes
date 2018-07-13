@@ -1,5 +1,9 @@
 package com.bridgelabz.controller;
 
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +24,7 @@ import com.bridgelabz.util.Utility;
  * @since 09-07-2018
  */
 @RestController
-public class LoginRegisterController {
+public class UserController {
 	@Autowired
 	private UserServiceImplemntation userServiceImplementation;
 
@@ -28,13 +32,14 @@ public class LoginRegisterController {
 	 * To take login url from view and perform operations on that
 	 * 
 	 * @param user
-	 * @return
+	 * @return Status
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<User> loginUser(@RequestBody User user) {
 		if (!userServiceImplementation.findByUserName(user).get().equals(null)) {
-			return new ResponseEntity("Welcome " + user.getFirstName(), HttpStatus.OK);
+			User optionalUser=userServiceImplementation.findByUserName(user).get();
+			return new ResponseEntity("Welcome " + optionalUser.getFirstName()+" "+optionalUser.getLastName(), HttpStatus.OK);
 		}
 		return new ResponseEntity(new Utility("Username doesnt not exist"), HttpStatus.CONFLICT);
 	}
@@ -43,7 +48,7 @@ public class LoginRegisterController {
 	 * To take register url from view and perform operations on that
 	 * 
 	 * @param user
-	 * @return
+	 * @return Status
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -56,12 +61,24 @@ public class LoginRegisterController {
 		return new ResponseEntity(new Utility("UserName allready exists"), HttpStatus.CONFLICT);
 	}
 
+	/**
+	 * To take activationlink url from view and perform operations on that
+	 * 
+	 * @param user
+	 * @return Status
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@RequestMapping(value = "/useractivation", method = RequestMethod.GET)
-	public ResponseEntity<String> userActivation(@RequestBody User user) {
-		return new ResponseEntity(new Utility("Register Successfully"), HttpStatus.OK);
+	public ResponseEntity<String> userActivation(HttpServletRequest req) {
+		return new ResponseEntity("Register Successfully", HttpStatus.OK);
 	}
-	
+
+	/**
+	 * To take forget password url from view and perform operations on that
+	 * 
+	 * @param user
+	 * @return Status
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = "/forgetpassword", method = RequestMethod.POST)
 	public ResponseEntity<User> forgetPassword(@RequestBody User user) {

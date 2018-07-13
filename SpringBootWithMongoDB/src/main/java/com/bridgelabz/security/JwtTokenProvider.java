@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.controller.LoginRegisterController;
+import com.bridgelabz.controller.UserController;
 import com.bridgelabz.model.User;
 
 import io.jsonwebtoken.Claims;
@@ -22,7 +22,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtTokenProvider {
 	final static String KEY = "yuga";
-	private static final Logger logger = LoggerFactory.getLogger(LoginRegisterController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	/**To generate the token
 	 * @param user

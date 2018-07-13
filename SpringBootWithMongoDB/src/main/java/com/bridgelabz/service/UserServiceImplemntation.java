@@ -1,22 +1,13 @@
 package com.bridgelabz.service;
 
 import java.util.Optional;
-import java.util.Properties;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.controller.LoginRegisterController;
+import com.bridgelabz.controller.UserController;
 import com.bridgelabz.model.User;
 import com.bridgelabz.repository.IUserRepository;
 import com.bridgelabz.security.JwtTokenProvider;
@@ -34,7 +25,7 @@ public class UserServiceImplemntation implements IUserService {
 	IUserRepository userRepository;
 	@Autowired
 	private JwtTokenProvider token;
-	private static final Logger logger = LoggerFactory.getLogger(LoginRegisterController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	private final String adminMailId = "dharaparanjape.1007@gmail.com";
 	private final String adminPassword = "dhara1007";
 
@@ -46,7 +37,7 @@ public class UserServiceImplemntation implements IUserService {
 	public Optional<User> findByUserName(User user) {
 		@SuppressWarnings("rawtypes")
 		Optional optionalUser = userRepository.findByEmail(user.getEmail());
-		if (optionalUser != null) {
+		if (optionalUser.isPresent()) {
 			return optionalUser;
 		} else
 			return null;
@@ -55,6 +46,8 @@ public class UserServiceImplemntation implements IUserService {
 	/** To verify user which is present in database or not */
 	@Override
 	public boolean verifyUser(User user) {
+		String userEmail = user.getEmail();
+		logger.info(userEmail);
 		if (userRepository.findByEmail(user.getEmail()) != null) {
 			saveUser(user);
 			return true;

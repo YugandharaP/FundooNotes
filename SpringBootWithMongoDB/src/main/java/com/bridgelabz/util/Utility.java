@@ -23,10 +23,19 @@ public class Utility {
 		this.errorMessage = errorMessage;
 	}
 
+	/**
+	 * @return error message
+	 */
 	public String getErrorMessage() {
 		return errorMessage;
 	}
 
+	/** send mail to the intended user
+	 * @param userEmail
+	 * @param userPassword
+	 * @param adminMailId
+	 * @param adminPassword
+	 */
 	@SuppressWarnings("static-access")
 	public static void sendMail(String userEmail, String userPassword, String adminMailId, String adminPassword) {
 		Properties properties = new Properties();
@@ -62,6 +71,13 @@ public class Utility {
 		}
 	}
 
+	/**send mail to the user with activation link
+	 * @param userEmail
+	 * @param adminMailId
+	 * @param adminPassword
+	 * @param validToken
+	 * @return
+	 */
 	@SuppressWarnings("static-access")
 	public static boolean sendMailForActivation(String userEmail, String adminMailId, String adminPassword,
 			String validToken) {

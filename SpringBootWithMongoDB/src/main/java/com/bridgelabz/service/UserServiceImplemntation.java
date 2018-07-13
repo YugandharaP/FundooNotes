@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.controller.UserController;
 import com.bridgelabz.model.User;
 import com.bridgelabz.repository.IUserRepository;
 import com.bridgelabz.security.JwtTokenProvider;
+import com.bridgelabz.util.MailService;
 import com.bridgelabz.util.Utility;
 
 /**
@@ -25,9 +25,7 @@ public class UserServiceImplemntation implements IUserService {
 	IUserRepository userRepository;
 	@Autowired
 	private JwtTokenProvider token;
-	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-	private final String adminMailId = "dharaparanjape.1007@gmail.com";
-	private final String adminPassword = "dhara1007";
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImplemntation.class);
 
 	/**
 	 * To verify userName is present in database or not
@@ -50,6 +48,7 @@ public class UserServiceImplemntation implements IUserService {
 		logger.info(userEmail);
 		if (userRepository.findByEmail(user.getEmail()) != null) {
 			saveUser(user);
+			sendAuthenticationMail(user);
 			return true;
 		}
 		return false;
@@ -63,7 +62,7 @@ public class UserServiceImplemntation implements IUserService {
 			Optional<User> optionalUser = userRepository.findByEmail(userEmail);
 			user = optionalUser.get();
 			String userPassword = user.getPassword();
-			Utility.sendMail(userEmail, userPassword, adminMailId, adminPassword);
+			MailService.sendMail(userEmail, userPassword);
 			return true;
 		}
 		return false;
@@ -77,16 +76,42 @@ public class UserServiceImplemntation implements IUserService {
 		userRepository.insert(user);
 	}
 
+	/**
+	 * To send mail with activation link
+	 * 
+	 * @param user
+	 * @return boolean value
+	 */
 	public boolean sendAuthenticationMail(User user) {
 		// generate token
 		String validToken = token.generator(user);
 		logger.info("Your token is : " + validToken);
-		token.parseJWT(validToken);
+		//token.parseJWT(validToken);
 		// send mail with token
 		String userEmail = user.getEmail();
-		if (Utility.sendMailForActivation(userEmail, adminMailId, adminPassword, validToken)) {
+		if (MailService.sendMailForActivation(userEmail, validToken)) {
 			return true;
 		} else
 			return false;
 	}
+
+	/**
+	 * To set user activation status into database
+	 * 
+	 * @param email
+	 */
+	@Override
+	public boolean setActivationStatus(String email) {
+			Optional<User> optionalUser = userRepository.findByEmail(email);
+			User user = new User();
+			optionalUser.get().setEmail(optionalUser.get().getEmail());
+			optionalUser.get().setPassword(optionalUser.get().getPassword());
+			optionalUser.get().setFirstName(optionalUser.get().getFirstName());
+			optionalUser.get().setLastName(optionalUser.get().getLastName());
+			optionalUser.get().setMobile(optionalUser.get().getMobile());
+			optionalUser.get().setStatus("true");
+			user = optionalUser.get();
+			saveUser(user);
+			return true;
+		}
 }

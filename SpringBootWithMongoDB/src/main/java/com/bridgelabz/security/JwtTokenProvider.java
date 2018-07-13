@@ -1,5 +1,6 @@
 package com.bridgelabz.security;
 
+import java.security.Key;
 import java.sql.Date;
 
 import javax.xml.bind.DatatypeConverter;
@@ -15,41 +16,38 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-/**purpose-To generate token for intended user
+import io.jsonwebtoken.impl.crypto.MacProvider;
+
+/**
+ * purpose-To generate token for intended user
+ * 
  * @author yuga
  *
  */
 @Service
 public class JwtTokenProvider {
-	final static String KEY = "yuga";
-	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+	Key key= MacProvider.generateKey();
+	private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-	/**To generate the token
+	/**
+	 * To generate the token
 	 * @param user
 	 * @return
 	 */
 	public String generator(User user) {
 		String email = user.getEmail();
-		String passkey = user.getPassword();
-		long time = System.currentTimeMillis();
-		long nowMillis = System.currentTimeMillis() + (20 * 60 * 60 * 1000);
-		Date now = new Date(nowMillis);
-		JwtBuilder builder = Jwts.builder().setId(passkey).setIssuedAt(now).setSubject(email)
-				.signWith(SignatureAlgorithm.HS256, KEY);
-		if (time >= 0) {
-
-		}
-		return builder.compact();
+		return Jwts.builder().setSubject(email).signWith(SignatureAlgorithm.HS256, key).compact();
 	}
 
-	/**To claim token
+	/**
+	 * To get claims of the token 
 	 * @param jwt
+	 * @return 
 	 */
-	public void parseJWT(String jwt) {
-
-		Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(KEY)).parseClaimsJws(jwt)
-				.getBody();
-		logger.info("ID: " + claims.getId());
+	public String parseJWT(String jwtToken) {
+		logger.info(jwtToken);
+		Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(jwtToken).getBody();
 		logger.info("Subject: " + claims.getSubject());
+		return claims.getSubject();
 	}
 }

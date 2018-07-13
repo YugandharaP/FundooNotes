@@ -18,8 +18,9 @@ public class User {
 	private String firstName;
 	private String lastName;
 	private String mobile;
+	private String status;
 
-	User() {
+	public User() {
 
 	}
 
@@ -63,11 +64,17 @@ public class User {
 		this.email = email;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 	@Override
 	public String toString() {
-		return "User [ email=" + email + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", mobile=" + mobile + "]";
+		return "User [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", mobile=" + mobile + ", status=" + status + "]";
 	}
-
 }
